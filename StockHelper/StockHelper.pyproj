@@ -24,9 +24,11 @@
     <Compile Include="gui.py" />
     <Compile Include="inventory.py" />
     <Compile Include="main.py" />
+    <Compile Include="models\product.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="data\" />
+    <Folder Include="models\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="data\stock.json" />

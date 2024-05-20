@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 from inventory import load_stock, save_stock, add_item, remove_item
+from models.product import Product
 
 class StockHelperApp:
     def __init__(self, root):

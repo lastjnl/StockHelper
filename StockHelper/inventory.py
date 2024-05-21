@@ -1,23 +1,42 @@
+import os
+import sys
 import json
 
+from models.product import Product
+
 def load_stock(filepath):
+    if not os.path.exists(filepath) or os.path.getsize(filepath) == 0:
+        return []
+    
     try:
         with open(filepath, 'r') as file:
-            return json.load(file)
+            data = json.load(file)
+            return [Product.from_dict(item) for item in data]
     except FileNotFoundError:
-        return {}
+        return []
     except json.JSONDecodeError:
-        return {}
+        return []
 
 def save_stock(filepath, stock):
     with open(filepath, 'w') as file:
-        json.dump(stock, file, indent=4)
+        json.dump([product.to_dict() for product in stock], file, indent=4)
 
-def add_item(stock, item, quantity):
-    stock[item] = stock.get(item, 0) + quantity
+def add_item(stock, product):
+    existing_product = find_product(stock, product.name)
+    if existing_product:
+        existing_product.add_quantity(product.quantity)
+    else:
+        stock.append(product)
     return stock
 
-def remove_item(stock, item, quantity):
-    if item in stock:
-        stock[item] = max(0, stock[item] - quantity)
+def remove_item(stock, product):
+    existing_product = find_product(stock, product.name)
+    if existing_product:
+        existing_product.remove_quantity(product.quantity)
     return stock
+
+def find_product(stock, name):
+    for product in stock:
+        if product.name == name:
+            return product
+    return None

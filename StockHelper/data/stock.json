@@ -1,8 +1,10 @@
-{
-    "koekjes": 1,
-    "melk": 3,
-    "banaan": 3,
-    "boter": 1,
-    "Yoghurt": 6,
-    "Karnemelk": 0
-}
+[
+    {
+        "name": "melk",
+        "quantity": 3
+    },
+    {
+        "name": "boter",
+        "quantity": 3
+    }
+]

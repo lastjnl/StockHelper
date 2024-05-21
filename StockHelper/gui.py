@@ -1,3 +1,5 @@
+from itertools import product
+from queue import Empty
 import tkinter as tk
 from tkinter import ttk, messagebox
 from inventory import load_stock, save_stock, add_item, remove_item
@@ -21,26 +23,26 @@ class StockHelperApp:
         root.grid_columnconfigure(1, weight=1)
         root.grid_rowconfigure(0, weight=1)
 
-        self.item_label = tk.Label(self.left_frame, text="Item")
-        self.item_label.pack(pady=5)
-        self.item_entry = tk.Entry(self.left_frame)
-        self.item_entry.pack(pady=5)
+        self.name_label = tk.Label(self.left_frame, text="Name")
+        self.name_label.pack(pady=5)
+        self.name_entry = tk.Entry(self.left_frame)
+        self.name_entry.pack(pady=5)
 
         self.quantity_label = tk.Label(self.left_frame, text="Quantity")
         self.quantity_label.pack(pady=5)
         self.quantity_entry = tk.Entry(self.left_frame)
         self.quantity_entry.pack(pady=5)
 
-        self.add_button = tk.Button(self.left_frame, text="Add Item", command=self.add_item)
+        self.add_button = tk.Button(self.left_frame, text="Add product", command=self.add_item)
         self.add_button.pack(pady=5)
 
-        self.remove_button = tk.Button(self.left_frame, text="Remove Item", command=self.remove_item)
+        self.remove_button = tk.Button(self.left_frame, text="Remove product", command=self.remove_item)
         self.remove_button.pack(pady=5)
 
-        self.tree = ttk.Treeview(self.right_frame, columns=("Item","Quantity"), show="headings")
-        self.tree.heading("Item", text="Item") 
+        self.tree = ttk.Treeview(self.right_frame, columns=("Name","Quantity"), show="headings")
+        self.tree.heading("Name", text="Name") 
         self.tree.heading("Quantity", text="Quantity")
-        self.tree.column("Item", anchor=tk.CENTER)
+        self.tree.column("Name", anchor=tk.CENTER)
         self.tree.column("Quantity", anchor=tk.CENTER)
         self.tree.pack(fill=tk.BOTH, expand=True)
 
@@ -48,25 +50,29 @@ class StockHelperApp:
 
     def populate_tree(self):
         for item in self.tree.get_children():
-            self.tree.delete(item)
-        for item, quantity in self.stock.items():
-            self.tree.insert("", "end", values=(item, quantity))
+            if item:
+                self.tree.delete(item)
+        if self.stock:
+            for product in self.stock:
+                self.tree.insert("", "end", values=(product.name, product.quantity))
 
     def add_item(self):
-        item = self.item_entry.get()
         try:
+            name = self.name_entry.get()
             quantity = int(self.quantity_entry.get())
-            self.stock = add_item(self.stock, item, quantity)
+            product = Product(name, quantity)
+            self.stock = add_item(self.stock, product)
             self.save_stock()
             self.populate_tree()
         except ValueError:
             messagebox.showerror("Error", "Please enter a valid quantity")
 
     def remove_item(self):
-        item = self.item_entry.get()
         try:
+            name = self.name_entry.get()
             quantity = int(self.quantity_entry.get())
-            self.stock = remove_item(self.stock, item, quantity)
+            product = Product(name, quantity)
+            self.stock = remove_item(self.stock, product)
             self.save_stock()
             self.populate_tree()
         except ValueError:

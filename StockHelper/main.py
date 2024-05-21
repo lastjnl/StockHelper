@@ -1,4 +1,3 @@
-from inventory import load_stock, save_stock, add_item, remove_item
 from gui import StockHelperApp
 
 import tkinter as tk

@@ -1,7 +1,8 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import W, IntVar, ttk, messagebox
 from inventory import load_stock, save_stock, add_item, remove_item
 from models.product import Product
+from models.setting import Setting
 
 class StockHelperApp:
     def __init__(self, root):
@@ -9,9 +10,10 @@ class StockHelperApp:
         self.root.title("Stock Helper")
         self.root.geometry("900x500")
         self.stock = load_stock('data/stock.json')
+        self.settings = Setting.load_all_settings()
 
         # Create frames
-        self.top_frame = tk.Frame(root, bg='lightgrey')
+        self.top_frame = tk.Frame(root)
         self.top_frame.grid(row=0, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
 
         self.left_frame = tk.Frame(root);
@@ -25,8 +27,13 @@ class StockHelperApp:
         root.grid_rowconfigure(1, weight=1)
 
         # Adding elements to top frame
-        self.sort_button = tk.Button(self.top_frame, text="Sort by name")
-        self.sort_button.pack(side="left", pady=5, padx=5)
+        self.sort_label = tk.Label(self.top_frame, text="Sort by: ")
+        self.sort_label.pack(pady=5)
+        sort_column_var = IntVar()
+        self.sorting_button_name = tk.Radiobutton(self.top_frame, text="Name", variable=sort_column_var, value="name", command=self.update_setting)
+        self.sorting_button_quantity = tk.Radiobutton(self.top_frame, text="Quantity", variable=sort_column_var, value="quantity", command=self.update_setting)
+        self.sorting_button_name.pack()
+        self.sorting_button_quantity.pack()
 
         # Adding elements to left frame
         self.search_label = tk.Label(self.left_frame, text="Search...")
@@ -62,6 +69,9 @@ class StockHelperApp:
         self.tree.pack(fill=tk.BOTH, expand=True)
 
         self.populate_tree()
+
+    def update_setting(self):
+        return
 
     def search(self):
         search_term = self.search_entry.get()

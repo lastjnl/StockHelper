@@ -1,0 +1,10 @@
+[
+	{
+		"key": "sort_column",
+		"value": "name"
+	},
+	{
+		"key": "sort_order",
+		"value": "ASC"
+	}
+]

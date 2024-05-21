@@ -1,5 +1,3 @@
-from itertools import product
-from queue import Empty
 import tkinter as tk
 from tkinter import ttk, messagebox
 from inventory import load_stock, save_stock, add_item, remove_item
@@ -13,15 +11,31 @@ class StockHelperApp:
         self.stock = load_stock('data/stock.json')
 
         # Create frames
+        self.top_frame = tk.Frame(root, bg='lightgrey')
+        self.top_frame.grid(row=0, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
+
         self.left_frame = tk.Frame(root);
-        self.left_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
+        self.left_frame.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
 
         self.right_frame = tk.Frame(root)
-        self.right_frame.grid(row=0, column=1, padx=10, pady=10, sticky="nsew")
+        self.right_frame.grid(row=1, column=1, padx=10, pady=10, sticky="nsew")
 
         # Configure grid weights to make the right frame expand
         root.grid_columnconfigure(1, weight=1)
-        root.grid_rowconfigure(0, weight=1)
+        root.grid_rowconfigure(1, weight=1)
+
+        # Adding elements to top frame
+        self.sort_button = tk.Button(self.top_frame, text="Sort by name")
+        self.sort_button.pack(side="left", pady=5, padx=5)
+
+        # Adding elements to left frame
+        self.search_label = tk.Label(self.left_frame, text="Search...")
+        self.search_label.pack(pady=5)
+        self.search_entry = tk.Entry(self.left_frame)
+        self.search_entry.pack(pady=0)
+
+        self.search_button = tk.Button(self.left_frame, text="Search", command=self.search)
+        self.search_button.pack(pady=15)
 
         self.name_label = tk.Label(self.left_frame, text="Name")
         self.name_label.pack(pady=5)
@@ -39,6 +53,7 @@ class StockHelperApp:
         self.remove_button = tk.Button(self.left_frame, text="Remove product", command=self.remove_item)
         self.remove_button.pack(pady=5)
 
+        # Setting up treeview
         self.tree = ttk.Treeview(self.right_frame, columns=("Name","Quantity"), show="headings")
         self.tree.heading("Name", text="Name") 
         self.tree.heading("Quantity", text="Quantity")
@@ -48,6 +63,11 @@ class StockHelperApp:
 
         self.populate_tree()
 
+    def search(self):
+        search_term = self.search_entry.get()
+        self.stock = load_stock('data/stock.json', search_term)
+        self.populate_tree()
+        
     def populate_tree(self):
         for item in self.tree.get_children():
             if item:

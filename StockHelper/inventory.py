@@ -1,17 +1,26 @@
 import os
+from re import search
 import sys
 import json
 
 from models.product import Product
 
-def load_stock(filepath):
+def load_stock(filepath, search_string=""):
     if not os.path.exists(filepath) or os.path.getsize(filepath) == 0:
         return []
     
     try:
         with open(filepath, 'r') as file:
             data = json.load(file)
-            return [Product.from_dict(item) for item in data]
+            stock = []
+            for item in data:
+                if search_string:
+                    if search_string == item["name"] or search_string in item["name"]:
+                        stock.append(Product.from_dict(item))
+                else:
+                    stock.append(Product.from_dict(item))
+                    
+            return stock
     except FileNotFoundError:
         return []
     except json.JSONDecodeError:
